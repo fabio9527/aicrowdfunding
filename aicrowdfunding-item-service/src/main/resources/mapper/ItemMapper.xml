@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.aicrowdfunding.aicrowdfundingitemservice.mapper.ItemMapper">
+
+
+    <resultMap id="item" type="com.aicrowdfunding.bean.vo.Item">
+        <result column="username" jdbcType="VARCHAR" property="username"/>
+        <result column="description" jdbcType="VARCHAR" property="description"/>
+        <result column="authstatus" jdbcType="CHAR" property="authstatus"/>
+        <result column="tellphone" jdbcType="VARCHAR" property="tellphone"/>
+        <association property="tProject" javaType="com.aicrowdfunding.bean.TProject">
+            <id column="id" jdbcType="INTEGER" property="id" />
+            <result column="name" jdbcType="VARCHAR" property="name" />
+            <result column="remark" jdbcType="VARCHAR" property="remark" />
+            <result column="money" jdbcType="DECIMAL" property="money" />
+            <result column="day" jdbcType="INTEGER" property="day" />
+            <result column="status" jdbcType="CHAR" property="status" />
+            <result column="deploydate" jdbcType="CHAR" property="deploydate" />
+            <result column="supportmoney" jdbcType="DECIMAL" property="supportmoney" />
+            <result column="supporter" jdbcType="INTEGER" property="supporter" />
+            <result column="completion" jdbcType="INTEGER" property="completion" />
+            <result column="memberid" jdbcType="INTEGER" property="memberid" />
+            <result column="deadline" jdbcType="CHAR" property="deadline" />
+            <result column="follower" jdbcType="INTEGER" property="follower" />
+        </association>
+        <collection property="tReturns" ofType="com.aicrowdfunding.bean.TReturn">
+            <id column="id" jdbcType="INTEGER" property="id" />
+            <result column="projectid" jdbcType="INTEGER" property="projectid" />
+            <result column="type" jdbcType="CHAR" property="type" />
+            <result column="supportmoney" jdbcType="DECIMAL" property="supportmoney" />
+            <result column="supporter" jdbcType="INTEGER" property="supporter" />
+            <result column="content" jdbcType="VARCHAR" property="content" />
+            <result column="signalpurchase" jdbcType="INTEGER" property="signalpurchase" />
+            <result column="purchase" jdbcType="INTEGER" property="purchase" />
+            <result column="remain" jdbcType="INTEGER" property="remain" />
+            <result column="freight" jdbcType="DECIMAL" property="freight" />
+            <result column="invoice" jdbcType="CHAR" property="invoice" />
+            <result column="rtndate" jdbcType="INTEGER" property="rtndate" />
+        </collection>
+
+    </resultMap>
+
+
+    <select id="selectItemById" resultMap="item">
+        SELECT
+            t_return.type,
+            t_return.supportmoney,
+            t_return.signalpurchase,
+            t_return.rtndate,
+            t_return.purchase,
+            t_return.projectid,
+            t_return.invoice,
+            t_return.id,
+            t_return.freight,
+            t_return.remain,
+            t_return.content,
+            project_member.username,
+            project_member.description,
+            project_member.tellphone,
+            project_member.authstatus,
+            project_member.supportmoney,
+            project_member.supporter,
+            project_member.STATUS,
+            project_member.remark,
+            project_member.NAME,
+            project_member.money,
+            project_member.memberid,
+            project_member.id,
+            project_member.follower,
+            project_member.deploydate,
+            project_member.DAY,
+            project_member.deadline,
+            project_member.COMPLETION
+        FROM
+        (SELECT
+            t_member.username,
+            t_member.description,
+            t_member.tellphone,
+            t_member.authstatus,
+            project.supportmoney,
+            project.supporter,
+            project.STATUS,
+            project.remark,
+            project.NAME,
+            project.money,
+            project.memberid,
+            project.id,
+            project.follower,
+            project.deploydate,
+            project.DAY,
+            project.deadline,
+            project.COMPLETION
+        FROM
+            (
+        SELECT
+            t_project.supportmoney,
+            t_project.supporter,
+            t_project.STATUS,
+            t_project.remark,
+            t_project.NAME,
+            t_project.money,
+            t_project.memberid,
+            t_project.id,
+            t_project.follower,
+            t_project.deploydate,
+            t_project.DAY,
+            t_project.deadline,
+            t_project.COMPLETION
+        FROM
+            t_project
+        WHERE
+            t_project.id = #{id}
+            ) AS project
+            LEFT JOIN t_member ON project.memberid = t_member.id
+            ) as project_member LEFT JOIN t_return on project_member.id=t_return.projectid
+    </select>
+</mapper>
